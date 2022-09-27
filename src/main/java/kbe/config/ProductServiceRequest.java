@@ -12,6 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 public class ProductServiceRequest {
 
-    String RequestType;
-    String message;
+    public String RequestType;
+    public String message;
 }
