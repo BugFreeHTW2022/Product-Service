@@ -1,0 +1,47 @@
+# docker-compose.yml in root folder
+version: "3.9"
+services:
+  product-service:
+    container_name: product-serviceApp
+    command: java -jar target/spring-data-redis-0.0.1-SNAPSHOT.jar
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+    ports:
+      - 8082:8080
+    environment:
+      - warehouse.baseurl=http://warehouse:8081/
+      - spring_data_mongodb_host=product-service-mongodb
+      - spring_data_mongodb_port=27017
+      - spring_data_mongodb_database=productservicedb
+      - spring_rabbitmq_host=rabbitmq
+      - spring_rabbitmq_port=5672
+      - spring_rabbitmq_username=guest
+      - spring_rabbitmq_password=guest
+      - spring_redis_host=redis
+      - spring_redis_port=6379
+      - spring_redis_database=0
+    depends_on:
+      - product-service-mongodb
+      - redis
+    networks:
+      warehouse_warehouseNetwork:
+  product-service-mongodb:
+    container_name: product-serviceDB
+    image: mongo:4.4.3
+    restart: always
+    ports:
+      - '27018:27017'
+    networks:
+      - warehouse_warehouseNetwork
+  redis:
+    container_name: product-serviceRedis
+    image: 'redis:7.0.4'
+    restart: always
+    ports:
+      - "16379:6379"
+    networks:
+      - warehouse_warehouseNetwork
+networks:
+  warehouse_warehouseNetwork:
+    external: true
